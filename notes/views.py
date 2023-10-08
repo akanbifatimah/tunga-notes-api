@@ -16,13 +16,28 @@ from rest_framework.permissions import IsAuthenticated
 # endpoint for create new note, POST--create note
 class NoteListView(generics.ListCreateAPIView):
     permission_classes=[IsAuthenticated]
-    queryset = Note.objects.all()
     serializer_class = NoteSerializer
+
+    def get_queryset(self):
+        
+        status = self.request.query_params.get('status')
+        
+             # sort according to latest date created
+        if status == 'unfinished':
+                return Note.objects.filter(status='unfinished')
+        elif status == 'overdue':
+            return Note.objects.filter(status='overdue')
+        elif status == 'done':
+            return Note.objects.filter(status='done')
+         # sort according to latest date created
+        else:
+            return Note.objects.all().order_by('-created_at')
+
 #end point for edit/update,delete and retrieve note
 #Put --edit,DELETE-delete,GET--retrieve/list note
 class NoteDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes=[IsAuthenticated]
-    queryset = Note.objects.all()
+    queryset = Note.objects.all().order_by('-created_at')
     serializer_class = NoteSerializer
 
 # register/create user endpoint
