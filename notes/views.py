@@ -12,7 +12,10 @@ from django.utils.http import  urlsafe_base64_decode
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from rest_framework.permissions import IsAuthenticated
-
+import tempfile
+from reportlab.pdfgen import canvas
+import csv
+from django.http import HttpResponse
 # endpoint for create new note, POST--create note
 class NoteListView(generics.ListCreateAPIView):
     permission_classes=[IsAuthenticated]
@@ -31,7 +34,17 @@ class NoteListView(generics.ListCreateAPIView):
             return Note.objects.filter(status='done')
          # sort according to latest date created
         else:
-            return Note.objects.all().order_by('-created_at')
+            sort_by = self.request.query_params.get('sort_by')
+            queryset = Note.objects.all().order_by('-created_at')
+
+            if sort_by == 'due_date':
+                queryset = queryset.order_by('due_date')
+            elif sort_by == 'priority':
+                queryset = queryset.order_by('-priority')
+            elif sort_by == 'created_at':
+                queryset = queryset.order_by('-created_at')
+
+            return queryset
 
 #end point for edit/update,delete and retrieve note
 #Put --edit,DELETE-delete,GET--retrieve/list note
@@ -49,6 +62,9 @@ def register_user(request):
         last_name = request.data.get('last_name')
         password = request.data.get('password')
         username=request.data.get('email')
+         # Check if the user with the provided email already exists
+        if User.objects.filter(email=email).exists():
+            return Response({'error': 'Email is already registered.'}, status=status.HTTP_400_BAD_REQUEST)
         # Create a new user
         user = User.objects.create_user(
             email=email,
@@ -59,7 +75,7 @@ def register_user(request):
 
         )
 
-        return Response({'message': 'User registered successfully.'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'User registered successfully.Use your email as your username when you want to login'}, status=status.HTTP_201_CREATED)
 
 # login endpoint
 @api_view(['POST'])
@@ -128,3 +144,55 @@ def reset_password(request, uidb64, token):
                 return Response({'message': 'Invalid reset link.'}, status=status.HTTP_401_UNAUTHORIZED)
         except User.DoesNotExist:
             return Response({'message': 'User does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    
+# export to pfd
+     
+
+# def export_to_pdf(request):
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = 'attachment; filename="notes.pdf"'
+
+#     p = canvas.Canvas(response)
+#     notes = Note.objects.all()
+
+#     for idx, note in enumerate(notes, start=1):
+#         p.drawString(100, 800 - (idx * 20), f"{note.title}: {note.content}")
+
+#     p.showPage()
+#     p.save()
+
+#     return response
+
+# request='GET' 
+
+def export_to_pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="notes.pdf"'
+
+    p = canvas.Canvas(response)
+    notes = Note.objects.all()
+
+    for idx, note in enumerate(notes, start=1):
+        p.drawString(100, 800 - (idx * 20), f"{note.title}: {note.content}")
+
+    p.showPage()
+    p.save()
+
+    return response
+
+# export_to_csv
+
+# request='GET' 
+def export_to_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="notes.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Title', 'Content'])
+
+    notes = Note.objects.all()
+    for note in notes:
+        writer.writerow([note.title, note.content])
+
+    return response
