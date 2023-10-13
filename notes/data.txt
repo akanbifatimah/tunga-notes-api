@@ -6,6 +6,13 @@
     "email":"akanb@gmail.com",
     "password":"nicewithyou"
 }
+
+#login
+{   
+    "username":"akanb@gmail.com",
+    "password":"nicewithyou"
+}
+
 #  reset password
 {
     "email":"akanbifatimah@gmail.com"
@@ -17,7 +24,8 @@
     "content": "Watching Real Madrid on the pitch is a symphony of skill and passion, where every touch of the ball resonates with a legacy of greatness. The elegant dance of their playmakers, the thunderous strikes, and the unwavering defense create a tapestry of footballing artistry that leaves me in awe. With every match, I'm swept into a world where white jerseys and Santiago Bernabéu roar, crafting moments of pure magic that etch unforgettable memories in the hearts of fans worldwide."
     
 }
-no 2 notes
+no 2 notes -DONE
 true.false for status
 implement access token refresh
 users should edit only thier notes
+improve the text appearance on csv/pdf

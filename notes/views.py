@@ -1,4 +1,5 @@
 from rest_framework import generics
+from django.shortcuts import render
 from .models import Note
 from .serializers import NoteSerializer
 from django.contrib.auth.models import User
@@ -16,6 +17,9 @@ import tempfile
 from reportlab.pdfgen import canvas
 import csv
 from django.http import HttpResponse
+from django.db import IntegrityError
+from django.template.loader import get_template
+from xhtml2pdf import pisa
 # endpoint for create new note, POST--create note
 class NoteListView(generics.ListCreateAPIView):
     permission_classes=[IsAuthenticated]
@@ -45,6 +49,13 @@ class NoteListView(generics.ListCreateAPIView):
                 queryset = queryset.order_by('-created_at')
 
             return queryset
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except IntegrityError as e:
+            return Response({'error': 'Note with same title or content already exists.'}, status=status.HTTP_400_BAD_REQUEST)    
+
+
 
 #end point for edit/update,delete and retrieve note
 #Put --edit,DELETE-delete,GET--retrieve/list note
@@ -149,36 +160,19 @@ def reset_password(request, uidb64, token):
 # export to pfd
      
 
-# def export_to_pdf(request):
-#     response = HttpResponse(content_type='application/pdf')
-#     response['Content-Disposition'] = 'attachment; filename="notes.pdf"'
-
-#     p = canvas.Canvas(response)
-#     notes = Note.objects.all()
-
-#     for idx, note in enumerate(notes, start=1):
-#         p.drawString(100, 800 - (idx * 20), f"{note.title}: {note.content}")
-
-#     p.showPage()
-#     p.save()
-
-#     return response
 
 # request='GET' 
 
 def export_to_pdf(request):
+    notes = Note.objects.all()
+    context = {'notes': notes}
+    template = get_template('pdf_templates/templates.html')
+    html = template.render(context)
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="notes.pdf"'
-
-    p = canvas.Canvas(response)
-    notes = Note.objects.all()
-
-    for idx, note in enumerate(notes, start=1):
-        p.drawString(100, 800 - (idx * 20), f"{note.title}: {note.content}")
-
-    p.showPage()
-    p.save()
-
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    if pisa_status.err:
+        return HttpResponse('We had some errors with code %s <pre>%s</pre>' % (pisa_status.err, html))
     return response
 
 # export_to_csv
@@ -193,6 +187,7 @@ def export_to_csv(request):
 
     notes = Note.objects.all()
     for note in notes:
-        writer.writerow([note.title, note.content])
+        
+        writer.writerow([note.title, f'  {note.content}  '])
 
     return response

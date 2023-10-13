@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'notes',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_spectacular',
      
 ]
 
@@ -189,7 +190,14 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
     
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+   'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     
+}
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'tunga_notes_app',
+    'DESCRIPTION': 'A web api for an online notes app',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
