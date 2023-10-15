@@ -9,13 +9,8 @@ class Note(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     due_date = models.DateField(null=True, blank=True)
-    
-    STATUS_CHOICES = [
-        ('unfinished', 'Unfinished'),
-        ('overdue', 'Overdue'),
-        ('done', 'Done'),
-    ]
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Done')
+    is_complete = models.BooleanField(default=False)
+   
     def save(self, *args, **kwargs):
         self.status = self.differentiate_status(self.due_date)
         super().save(*args, **kwargs)
@@ -24,8 +19,12 @@ class Note(models.Model):
     def differentiate_status(self, due_date):
         today = datetime.now().date()
 
-        if due_date is None:
+        if self.is_complete:
+            return 'complete'
+        elif due_date is None:
             return 'unfinished'
+        elif due_date == today:  
+            return 'due_today'
         elif due_date < today:
             return 'overdue'
         else:

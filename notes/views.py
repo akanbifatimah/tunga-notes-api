@@ -20,6 +20,8 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 from django.template.loader import get_template
 from xhtml2pdf import pisa
+from datetime import datetime
+
 # endpoint for create new note, POST--create note
 class NoteListView(generics.ListCreateAPIView):
     permission_classes=[IsAuthenticated]
@@ -31,11 +33,11 @@ class NoteListView(generics.ListCreateAPIView):
         
              # sort according to latest date created
         if status == 'unfinished':
-                return Note.objects.filter(status='unfinished')
+            return Note.objects.filter(is_complete=False, due_date__gt=datetime.now().date())
         elif status == 'overdue':
-            return Note.objects.filter(status='overdue')
+            return Note.objects.filter(is_complete=False, due_date__lt=datetime.now().date())
         elif status == 'done':
-            return Note.objects.filter(status='done')
+            return Note.objects.filter(is_complete=True)
          # sort according to latest date created
         else:
             sort_by = self.request.query_params.get('sort_by')
@@ -50,7 +52,10 @@ class NoteListView(generics.ListCreateAPIView):
 
             return queryset
     def create(self, request, *args, **kwargs):
+        
         try:
+            is_complete = request.data.get('is_complete', False)
+            request.data['is_complete'] = is_complete
             return super().create(request, *args, **kwargs)
         except IntegrityError as e:
             return Response({'error': 'Note with same title or content already exists.'}, status=status.HTTP_400_BAD_REQUEST)    

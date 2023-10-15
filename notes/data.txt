@@ -20,12 +20,32 @@
 # create notes
 {
    
-    "title": "REALMADRID!!!",
+    "title": "REALMADRID Test!!!",
     "content": "Watching Real Madrid on the pitch is a symphony of skill and passion, where every touch of the ball resonates with a legacy of greatness. The elegant dance of their playmakers, the thunderous strikes, and the unwavering defense create a tapestry of footballing artistry that leaves me in awe. With every match, I'm swept into a world where white jerseys and Santiago Bernabéu roar, crafting moments of pure magic that etch unforgettable memories in the hearts of fans worldwide."
-    
+    "due_date": "2023-10-31",
+    "is_complete": false,
+}
+{
+   "title": "Complete Task",
+   "content": "This task is complete.",
+   "due_date": "2023-10-15",
+   "is_complete": true,
+   "status": "complete"
+}
+{
+   
+    "title": "WATCHING SOCCER",
+    "content": "Watching Real Madrid on the pitch is a symphony of skill and passion, where every touch of the ball resonates with a legacy of greatness. The elegant dance of their playmakers, the thunderous strikes, and the unwavering defense create a tapestry of footballing artistry that leaves me in awe. With every match, I'm swept into a world where white jerseys and Santiago Bernabéu roar, crafting moments of pure magic that etch unforgettable memories in the hearts of fans worldwide.222",
+    "due_date": "2023-10-15",
+    "is_complete": false
 }
 no 2 notes -DONE
 true.false for status
 implement access token refresh
 users should edit only thier notes
 improve the text appearance on csv/pdf-done
+
+To retrieve unfinished notes: /api/v1/notes/?status=unfinished
+To retrieve overdue notes: /api/v1/notes/?status=overdue
+To retrieve done notes: /api/v1/notes/?status=done
+To retrieve all notes (sorted by creation date): /api/v1/notes/
