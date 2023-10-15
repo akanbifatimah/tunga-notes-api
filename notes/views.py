@@ -108,6 +108,7 @@ def login_user(request):
         else: 
             return Response({'message': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+
 # log out endpoint
 
 @api_view(['POST'])

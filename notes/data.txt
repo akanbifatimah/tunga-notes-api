@@ -28,4 +28,4 @@ no 2 notes -DONE
 true.false for status
 implement access token refresh
 users should edit only thier notes
-improve the text appearance on csv/pdf
+improve the text appearance on csv/pdf-done
