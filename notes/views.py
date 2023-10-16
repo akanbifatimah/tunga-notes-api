@@ -197,3 +197,15 @@ def export_to_csv(request):
         writer.writerow([note.title, f'  {note.content}  '])
 
     return response
+
+# send notes in emails
+
+def generate_notes_list():
+    notes = Note.objects.all()  # Retrieve all notes
+    return notes
+
+def send_notes_list_email(email, notes_list):
+    subject = 'Notes List'
+    message = '\n'.join([f'{note.title}: {note.content}' for note in notes_list])
+
+    send_mail(subject, message, 'zahrahbintfat@gmail.com', [email])

@@ -5,6 +5,12 @@
     "last_name":"victor",
     "email":"akanb@gmail.com",
     "password":"nicewithyou"
+},
+{
+    "first_name":"ayo",
+    "last_name":"victor",
+    "email":"aliyumuhammed885@gmail.com",
+    "password":"aliyuforlife"
 }
 
 #login
@@ -39,11 +45,8 @@
     "due_date": "2023-10-15",
     "is_complete": false
 }
-no 2 notes -DONE
-true.false for status
-implement access token refresh
-users should edit only thier notes
-improve the text appearance on csv/pdf-done
+test: http://127.0.0.1:8000/api/v1/notes/
+swagger:http://127.0.0.1:8000/swagger/
 
 To retrieve unfinished notes: /api/v1/notes/?status=unfinished
 To retrieve overdue notes: /api/v1/notes/?status=overdue
